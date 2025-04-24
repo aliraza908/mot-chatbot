@@ -15,61 +15,59 @@ def classify_query(query: str, last_user: str = "", last_response: str = "", mem
 
     # --- Step 1: Build enhanced planning prompt ---
     prompt = f"""
-    You are an intelligent planner for an ecommerce toy store assistant that sells Beyblades from the CX, UX, and BX series.
+You are an intelligent planner for an ecommerce toy store assistant that sells Beyblades from the CX, UX, and BX series.
 
-    Your job is to understand the user's intent and produce a structured JSON plan to help route the query to the correct AI agents.
+Your job is to understand the user's intent and produce a structured JSON plan to help route the query to the correct AI agents.
 
-    Use memory, past turns, and query content to reason intelligently.
+Use memory, past turns, and query content to reason intelligently.
 
-    ---
+---
 
-    You must output the following fields:
+You must output the following fields:
 
-    1. "intents": List of high-level intents detected in the query. Choose one or more from:
-       - "product"
-       - "order"
-       - "policy"
-       - "blog"
-       - "general"
+1. "intents": List of high-level intents detected in the query. Choose one or more from:
+   - "product"
+   - "order"
+   - "policy"
+   - "blog"
+   - "general"
 
-    2. "needs_memory": true if the query refers to a previous topic or uses vague terms like "it", "that one", etc.
+2. "needs_memory": true if the query refers to a previous topic or uses vague terms like "it", "that one", etc.
 
-    3. "info_complete": true if the query includes all required details (like product codes or order numbers) for agent execution.
+3. "info_complete": true if the query includes all required details (like product codes or order numbers) for agent execution.
 
-    4. "order_number": Extract the order number if provided (e.g., "#123456" or "order 54321"). If not present, return null.
+4. "order_number": Extract the order number if provided (e.g., "#123456" or "order 54321"). If not present, return null.
 
-    5. "actions": List of agent calls required to answer the query. Follow these rules:
-       - Only call the **order agent** if the user wants to **track** an order **and** provides an order number.
-       - If the user complains about delivery (e.g., "not shipped", "haven’t received"), but no order number is provided, route to the **policy agent**.
-       - If the query asks about **Beyblade types** (e.g., "attack type", "defense type", or comparisons), route to the **blog agent**.
-       - If the query requires **deep info about specific Beyblades**, call both **product** and **blog** agents.
-       - Only include actions with enough input data (product code, order number, etc.).
+5. "actions": List of agent calls required to answer the query. Only add an action of type "order" if an actual order number is detected.
+   Each action must contain:
+   - "type": one of "product", "policy", "blog", or "order"
+   - "input": the product code, policy topic, blog topic, or order number
 
-    ---
+---
 
-    Return ONLY a valid JSON object like this:
-    {{
-      "intents": [...],
-      "needs_memory": true | false,
-      "info_complete": true | false,
-      "order_number": "..." | null,
-      "actions": [{{"type": "...", "input": "..."}}]
-    }}
+Return ONLY a valid JSON object like this:
+{{
+  "intents": [...],
+  "needs_memory": true | false,
+  "info_complete": true | false,
+  "order_number": "..." | null,
+  "actions": [{{"type": "...", "input": "..."}}]
+}}
 
-    ---
+---
 
-    Previous User Message:
-    "{last_user}"
+Previous User Message:
+"{last_user}"
 
-    Previous Assistant Response:
-    "{last_response}"
+Previous Assistant Response:
+"{last_response}"
 
-    Memory Summary:
-    {memory_summary}
+Memory Summary:
+{memory_summary}
 
-    Current User Query:
-    "{query}"
-    """.strip()
+Current User Query:
+"{query}"
+""".strip()
 
     # --- Step 2: Ask GPT for high-level plan ---
     try:
