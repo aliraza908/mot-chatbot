@@ -6,7 +6,7 @@ import os
 
 SHOP_NAME = "malloftoys"
 API_VERSION = "2024-01"
-ACCESS_TOKEN = "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"
+ACCESS_TOKEN = os.getenv("SHOPIFY_API_KEY")
 BASE_URL = f"https://{SHOP_NAME}.myshopify.com/admin/api/{API_VERSION}"
 HEADERS = {
     "Content-Type": "application/json",
