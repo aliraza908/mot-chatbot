@@ -1,27 +1,29 @@
-# Use official Python image
+# Use Python 3.10 slim as base
 FROM python:3.10-slim
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
 
-# Copy project files
-COPY . /app
+# Copy all project files
+COPY . .
 
-# Install OS dependencies
+# Install FAISS dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    python3-dev \
-    swig \
+    cmake \
     libopenblas-dev \
+    libomp-dev \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Upgrade pip and install Python deps
 RUN pip install --upgrade pip
+RUN pip install faiss-cpu
 RUN pip install -r requirements.txt
 
+# Expose default Streamlit port
+EXPOSE 8501
+
 # Run Streamlit app
-CMD ["streamlit", "run", "test_tools.py", "--server.port=8080", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "test_tools.py", "--server.port=8501", "--server.enableCORS=false"]
+
