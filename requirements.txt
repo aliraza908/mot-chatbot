@@ -1,0 +1,23 @@
+langchain>=0.2.0
+langgraph>=0.0.31
+openai>=1.13.3
+
+faiss-cpu==1.7.4
+
+spacy==3.7.2
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl
+
+rank_bm25==0.2.2
+
+beautifulsoup4==4.12.3
+requests==2.31.0
+
+langchain-openai>=0.0.5
+langchain-community>=0.0.19
+
+streamlit==1.33.0
+
+numpy==1.26.4
+pandas==2.2.1
+
+python-dotenv==1.0.1
